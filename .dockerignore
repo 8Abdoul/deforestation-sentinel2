@@ -1,0 +1,8 @@
+.venv
+data
+notebooks
+.git
+__pycache__
+*.tif
+*.npy
+docs/overlays
