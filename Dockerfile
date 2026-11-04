@@ -2,11 +2,18 @@ FROM python:3.12-slim
 
 WORKDIR /code
 
-# PyTorch version CPU (beaucoup plus legere que la version GPU)
-RUN pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu
+RUN pip install --upgrade pip
+
+# PyTorch version CPU (lourd : delais longs, reessais et reprise en cas de coupure)
+RUN pip install --no-cache-dir --default-timeout=300 --retries 10 --resume-retries 10 \
+    torch torchvision --index-url https://download.pytorch.org/whl/cpu
 
 COPY requirements-api.txt .
-RUN pip install --no-cache-dir -r requirements-api.txt
+RUN pip install --no-cache-dir --default-timeout=300 --retries 10 -r requirements-api.txt
+
+# Bibliotheques systeme manquantes dans l'image slim (necessaires a rasterio et PyTorch)
+RUN apt-get update && apt-get install -y --no-install-recommends libexpat1 libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY app ./app
 COPY models ./models
