@@ -40,6 +40,26 @@ python src\04_train.py
 python src\07_change_detection.py
 python src\10_make_map.py        # carte : docs/map.html
 ```
+## API et Docker
+
+L'API (FastAPI) expose :
+- `GET /health` : état du service
+- `POST /predict` : pourcentage de forêt sur un GeoTIFF 4 bandes (B2, B3, B4, B8)
+- `POST /predict/mask` : masque de forêt en PNG
+- `POST /change` : perte de forêt entre deux dates
+- `GET /map` : carte interactive
+
+Tests : `python -m pytest` (5 tests). 
+
+Conteneur :
+docker build -t deforestation-api .
+docker run -p 8000:8000 deforestation-api
+# puis http://localhost:8000/docs
+
+Les poids du modèle (`models/unet_best.pth`) ne sont pas versionnés : lancer `python src/04_train.py` pour les régénérer avant de construire l'image.
+
+![Health](docs/api_health.png)
+![Prédiction](docs/api_predict.png)
 
 ## À venir
-API FastAPI + Docker. Piste d'amélioration : augmentation de données, canal NDVI, plusieurs régions.
+ Piste d'amélioration : augmentation de données, canal NDVI, plusieurs régions.
